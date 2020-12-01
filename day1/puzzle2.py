@@ -1,13 +1,9 @@
 #! /usr/bin/env python3
 
-import csv
 import common
 
-with open('expense_report.csv', newline='') as csvFile:
-    expenseReport = [int(row[0]) for row in csv.reader(csvFile)]
+expense_report = common.get_expense_report()
 
-    for row in expenseReport:
-        match = common.multiply_pair_summing_to(2020 - row)
-        if match:
-            print(match * row)
-            break
+pairs = [(row, common.multiply_pair_summing_to(2020 - row, expense_report)) for row in expense_report]
+matching_pair = [pair for pair in pairs if pair[1]]
+print(matching_pair[0][0] * matching_pair[0][1])
