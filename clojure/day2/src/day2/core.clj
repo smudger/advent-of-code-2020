@@ -17,12 +17,15 @@
      (and (<= (nth row 0) (nth row 2)) (>= (nth row 1) (nth row 2)))
   )
 
-  (->> '("1-9 x: xwjgxtmrzxzmkx", "4-6 r: rrrkrgr")
-       (map #(clojure.string/split % #" "))
-       (map parse)
-       (map countMatches)
-       (filter isValid)
-       (count)
-       (println)
+  (with-open [rdr (clojure.java.io/reader "src/day2/passwords.txt")]
+    (->>
+         (line-seq rdr)
+         (map #(clojure.string/split % #" "))
+         (map parse)
+         (map countMatches)
+         (filter isValid)
+         (count)
+         (println)
+    )
   )
 )
