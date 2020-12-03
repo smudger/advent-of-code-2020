@@ -1,4 +1,4 @@
-(ns day2.core)
+(ns day2.core (:gen-class :main true))
 
 (defn -main [& args]
   (defn parse [row]
