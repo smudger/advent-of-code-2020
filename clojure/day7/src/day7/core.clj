@@ -2,12 +2,13 @@
 
 (defn -main [& args]
   (defn parseContents [first & rest] (
-    ->> (sequence rest)
+    ->> (map #(clojure.string/split % #"\s" 2) rest)
+        (sequence)
         (hash-map first)
   ))
 
   (defn parseRule [rule] (
-    ->> (re-seq #"((?:\w+\s){2})bag" rule)
+    ->> (re-seq #"((?:\d+\s)?(?:\w+\s){2})bag" rule)
         (map last)
         (map clojure.string/trimr)
         (filter #(not= "no other" %))
@@ -23,14 +24,14 @@
     (into (sorted-map))
   ))
 
-  (defn containsBag [needle haystack] (
-    ->> (some #(containsBag needle (get bags %)) haystack)
-        (or (some #{needle} haystack))
+  (defn countNested [outer] (
+    ->> (get bags outer)
+        (reduce (fn [acc bag] (
+          ->> acc
+              (+ (read-string (first bag)))
+              (+ (* (read-string (first bag)) (countNested (last bag))))
+        )) 0)
   ))
 
-  (->>
-    (filter #(containsBag "shiny gold" (last %)) bags)
-    (count)
-    (println)
-  )
+  (println (countNested "shiny gold"))
 )
