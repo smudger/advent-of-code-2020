@@ -9,18 +9,36 @@
 
   (defn runSeq [ops]
     (defn parseOp [op seenOps]
-      (if (some #(= op %) seenOps)
-        seenOps
-        (->> seenOps
-             (cons op)
-             (parseOp (nth ops (nextIndex op)))
-             reverse
+      (if (and (< (nextIndex op) (count ops)) (>= (nextIndex op) 0))
+        (if (some #(= op %) seenOps)
+          seenOps
+          (->> seenOps
+               (cons op)
+               (parseOp (nth ops (nextIndex op)))
+               reverse
+          )
         )
+        (reverse (cons op seenOps))
       )
     )
 
     (parseOp (first ops) [])
   )
+
+  (defn replaceOp [op] (
+    case (first op)
+    "jmp" ["nop" (nth op 1) (nth op 2)]
+    "nop" ["jmp" (nth op 1) (nth op 2)]
+    op
+  ))
+
+  (defn replaceAtIndex [idxToReplace ops] (
+    map-indexed (fn [idx op] (
+      if (= idxToReplace idx)
+         (replaceOp op)
+         op
+    )) ops
+  ))
 
   (def ops (->>
      (->
@@ -32,7 +50,15 @@
   ))
 
   (->>
-    (runSeq ops)
+    (count ops)
+    (range)
+    (apply vector)
+    (map #(replaceAtIndex % ops))
+    (frequencies)
+    (map first)
+    (map runSeq)
+    (filter #(= (nextIndex (last %)) (count ops)))
+    (first)
     (filter #(= "acc" (first %)))
     (reduce (fn [acc op] (->>
       (second op)
