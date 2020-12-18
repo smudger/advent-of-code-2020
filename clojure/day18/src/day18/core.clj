@@ -2,10 +2,10 @@
 
 (def ops {"+" + "*" *})
 
-(defn parseChar [char] 
+(defn parseChar [char]
   (if (re-find #"\d" char)
       (read-string char)
-      (get ops char) 
+      (get ops char)
   ))
 
 (defn evaluateSimple [expr] (let [[start & rest] (->>
@@ -18,20 +18,27 @@
     )
 ))
 
+(defn evaluateAdditionFirst [expr] (->>
+  (clojure.string/split expr #" \* ")
+  (map (comp read-string evaluateSimple))
+  (reduce *)
+  (str)
+))
+
 (defn evaluateBrackets [expr] (->>
   (re-seq #"\(([^\(\)]*)\)" expr)
-  (map #(list (first %) (evaluateSimple (last %))))
+  (map #(list (first %) (evaluateAdditionFirst (last %))))
   (reduce (fn [expr [from to]] (clojure.string/replace expr from to)) expr)
   ))
 
-(defn evaluateExpression [expr] 
+(defn evaluateExpression [expr]
   (if (re-find #"\(([^\(\)]*)\)" expr)
       (recur (evaluateBrackets expr))
-      ((comp read-string evaluateSimple) expr)
+      ((comp read-string evaluateAdditionFirst) expr)
   )
 )
 
-(defn -main [& args] (->> 
+(defn -main [& args] (->>
   (->
     (slurp "resources/expressions.txt")
     (clojure.string/split #"\n")
