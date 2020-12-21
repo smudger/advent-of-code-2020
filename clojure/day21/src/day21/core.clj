@@ -1,5 +1,6 @@
 (ns day21.core
- (:require [clojure.set]))
+ (:require [clojure.set])
+)
 
 (defn parse-menu [menu] (->>
   (->
@@ -94,7 +95,18 @@
   )
 ))
 
+(defn solve-2 [input] (let [menu (parse-menu input)]
+  (->>
+    menu
+    (translate-menu)
+    (sort-by #(key %))
+    (vals)
+    (clojure.string/join ",")
+  )
+))
+
 (defn -main
   [& args]
   (println (solve-1 (slurp "resources/menu.txt")))
+  (println (solve-2 (slurp "resources/menu.txt")))
 )

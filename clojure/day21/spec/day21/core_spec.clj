@@ -92,4 +92,7 @@
   (it "should solve puzzle 1"
     (should= 5 (solve-1 "mxmxvkd kfcds sqjhc nhms (contains dairy, fish)\ntrh fvjkl sbzzf mxmxvkd (contains dairy)\nsqjhc fvjkl (contains soy)\nsqjhc mxmxvkd sbzzf (contains fish)"))
   )
+  (it "should solve puzzle 2"
+    (should= "mxmxvkd,sqjhc,fvjkl" (solve-2 "mxmxvkd kfcds sqjhc nhms (contains dairy, fish)\ntrh fvjkl sbzzf mxmxvkd (contains dairy)\nsqjhc fvjkl (contains soy)\nsqjhc mxmxvkd sbzzf (contains fish)"))
+  )
 )
